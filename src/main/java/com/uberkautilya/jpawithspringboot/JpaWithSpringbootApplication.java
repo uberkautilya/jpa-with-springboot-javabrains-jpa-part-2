@@ -2,21 +2,29 @@ package com.uberkautilya.jpawithspringboot;
 
 import com.uberkautilya.jpawithspringboot.entity.Employee;
 import com.uberkautilya.jpawithspringboot.repository.EmployeeRepository;
+import com.uberkautilya.jpawithspringboot.service.TransactionalDemo;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Optional;
 
+/**
+ * @EnableTransactionManagement: To enable @Transactional support, need to be added on the main class of the spring boot application
+ */
 @SpringBootApplication
+@EnableTransactionManagement
 public class JpaWithSpringbootApplication {
     /**
      * One:
-     *
      * @PersistenceUnit gives more context to the dependency injection that the properties for the persistence unit are defined
      * Not just any bean, but the EntityManagerFactory defined in the persistence unit
      * As the beans are managed by Spring, needn't close it after persisting
@@ -50,6 +58,8 @@ public class JpaWithSpringbootApplication {
     @PersistenceContext(type = PersistenceContextType.EXTENDED)
     private EntityManager extendedManager;
 
+    @Autowired
+    TransactionalDemo transactionalDemo;
     public static void main(String[] args) {
         SpringApplication.run(JpaWithSpringbootApplication.class, args);
     }
@@ -64,10 +74,12 @@ public class JpaWithSpringbootApplication {
 //        saveWithEntityManagerFactory();
 //        saveWithExtendedEntityManager();
 //        findWithEntityManagerNotExtended();
-
 //        employeeRepository.findAll().forEach(System.out::println);
         Optional<Employee> employeeById = employeeRepository.findById(BigInteger.valueOf(1));
         employeeById.ifPresent(System.out::println);
+
+        transactionalDemo.updateEmployee(employeeById.orElse(null));
+        transactionalDemo.readEmployeeAndAccessCards();
     }
 
     private void findWithEntityManagerNotExtended() {
@@ -97,5 +109,4 @@ public class JpaWithSpringbootApplication {
         transaction.commit();
         eManager.close();
     }
-
 }
