@@ -1,5 +1,6 @@
 package com.uberkautilya.jpawithspringboot.service;
 
+import com.uberkautilya.jpawithspringboot.aspect.log;
 import com.uberkautilya.jpawithspringboot.entity.AccessCard;
 import com.uberkautilya.jpawithspringboot.entity.Employee;
 import com.uberkautilya.jpawithspringboot.repository.AccessCardRepository;
@@ -28,6 +29,7 @@ public class TransactionalDemo {
      * @param accessCard
      */
     @Transactional
+    @log
     public void updateEmployeeAndAccessCard(Employee employee, AccessCard accessCard) {
         updateEmployee(employee);
         accessCardRepository.save(accessCard);
@@ -49,6 +51,7 @@ public class TransactionalDemo {
     @Transactional(value = Transactional.TxType.REQUIRED,
             rollbackOn = {SQLException.class, IOException.class},
             dontRollbackOn = NullPointerException.class)
+    @log
     public void updateEmployee(Employee employee) {
         employee.setName("Updated Name");
         /*

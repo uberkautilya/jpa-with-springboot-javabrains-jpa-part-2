@@ -5,18 +5,20 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
 
 @Aspect
+@Component
 public class LoggingAspect {
     @Around("@annotation(log)")
-    public Object logMethod(ProceedingJoinPoint proceedingJoinPoint, JoinPoint joinPoint) {
+    public Object logMethod(ProceedingJoinPoint proceedingPoint) {
         try {
-            Object[] args = joinPoint.getArgs();
-            Signature signature = joinPoint.getSignature();
-            joinPoint.getTarget();
+            Object[] args = proceedingPoint.getArgs();
+            Signature signature = proceedingPoint.getSignature();
+            proceedingPoint.getTarget();
 
             System.out.println("Logging from an advise in LoggingAspect. ");
-            Object returnObj = proceedingJoinPoint.proceed();
+            Object returnObj = proceedingPoint.proceed();
             System.out.println("After executing the method annotated for aspect");
             return returnObj;
         } catch (Throwable e) {
